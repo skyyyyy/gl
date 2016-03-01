@@ -1,0 +1,42 @@
+Kth Smallest Node In BST Jan 19 2015
+找BST中第k小的节点。
+G家考过很多次，其他公司的面经里也经常出现。递归解法很简单O(N)。
+
+
+int get_kth(TreeNode* root, int k) {
+    int ret = 0, count = 0;
+  
+    function<void(TreeNode*)> solve = [&](TreeNode* node) {
+        if(!node) return;
+        solve(node->left);
+        if(++count == k) {
+            ret = node->val;
+            return;
+        }
+        solve(node->right);
+    }; 
+    solve(root);
+    return ret;
+}
+也可以用stack来做iterative的中序遍历，直接count一下就好，也是O(N)。
+
+
+
+如果想更优化效率，可以引入order statistic tree。
+Order statistic tree是一种BST的变种，往每个node里面加上一个field来存左子树的节点数，在树平衡时可以达到O(logN)复杂度。
+这种树在很多题目中都可以用到。
+伪代码（摘自GeeksforGeeks）：
+
+
+start:
+if K = root.leftElement + 1
+   root node is the K th node.
+   goto stop
+else if K > root.leftElements
+   K = K - (root.leftElements + 1)
+   root = root.right
+   goto start
+else
+   root = root.left
+   goto start
+stop:
