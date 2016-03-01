@@ -1,0 +1,61 @@
+Sums of All Subtrees Jan 19 2015
+给你一组Treenode，他们每个有一个id，一个parentId，一个value，让你输出所有subtree的sum of value。
+注意这个是没有children node的，只有parentId。
+G家的新题。总的来说是一个bottom up的解法，先找出每一个level的所有节点，然后从最下面往上做level order traversal。
+但是我的解法总感觉还是太麻烦了。。。
+
+
+void all_sum(const unordered_map<int,int>& parents, const unordered_map<int,int>& values) {
+    int max_level = 0;
+    unordered_map<int,int> node_levels;
+    function<int(int)> calc_level = [&](int id) {
+        if(node_levels.count(id)) return node_levels[id];
+        int ret = (parents.at(id) == -1) ? 0 : calc_level(parents.at(id)) + 1;
+        max_level = std::max(max_level, ret);
+        node_levels[id] = ret;
+        return ret;
+    };
+   
+    for(auto& p : parents) calc_level(p.first);
+    vector<vector<int>> levels(max_level + 1);
+    for(auto& p : node_levels) levels[p.second].push_back(p.first);
+   
+    unordered_map<int,int> subtree_sums = values;
+   
+    for(int i = (int)levels.size()-1; i >= 0; --i) {
+        for(auto& node : levels[i]) {
+            if(parents.at(node) != -1)
+                subtree_sums[parents.at(node)] += subtree_sums[node];
+        }
+    }
+    for(auto& p : subtree_sums)
+        cout << "Root: " << p.first << " Subtree sum: " << p.second << endl;
+}
+下面是测试，比如对这棵树(括号里是节点的value)。
+
+1
+2
+3
+4
+5
+      0(1)
+     /   \
+   1(2)  2(3)
+  /   \
+3(4) 4(5)
+1
+2
+all_sum({{0,-1},{1,0},{2,0},{3,1},{4,1}},
+        {{0,1},{1,2},{2,3},{3,4},{4,5}});
+输出
+
+1
+2
+3
+4
+5
+Root: 0 Subtree sum: 15
+Root: 1 Subtree sum: 11
+Root: 2 Subtree sum: 3
+Root: 3 Subtree sum: 4
+Root: 4 Subtree sum: 5
