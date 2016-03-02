@@ -1,0 +1,56 @@
+
+
+Merge Sorted Stream Jan 15 2015
+输入为一个Iterator数组，这些Iterator分别取出来的数都是已排序的，设计并实现一个MergeIterator类，merge这些sorted iterator。
+你的MergeIterator类需要包含has_next和get_next方法。
+注意，Iterator也只包含has_next和get_next方法。
+G家的onsite题，实际上就是多路归并，用一个heap就可以搞定，注意类的细节设计即可。
+看过一个面经，面试者跟面试官说Iterator的接口需要有个peek()函数（即只看，不move），实际上是可以不需要的。
+
+Iterator的建议参考实现：
+
+
+class Iterator {
+public:
+    Iterator(vector<int>&& data) : _data(move(data)) {}
+    int get_next() { return _data[_pointer++]; }    
+    bool has_next() { return _pointer < _data.size(); }
+    
+private:
+    vector<int> _data;
+    size_t _pointer{ 0 };
+};
+MergeIterator:
+感觉用C++写还是蛮麻烦的。
+
+
+class MergeIterator {
+public:
+    MergeIterator(vector<Iterator> streams) {
+        for(auto& pi : streams) {
+            if(!pi.has_next()) continue;
+            _heap.emplace(pi.get_next(), _streams.size());
+            _streams.push_back(pi);
+        }
+    }
+    int get_next() {
+        auto ret = _heap.top();
+        _heap.pop();
+        if(_streams[ret.second].has_next())
+            _heap.emplace(_streams[ret.second].get_next(), ret.second);
+        return ret.first;
+    }
+    bool has_next() { return !_heap.empty(); }    
+private:
+    using _pair = pair<int,int>;
+    vector<Iterator> _streams;
+    priority_queue<_pair,vector<_pair>,function<bool(_pair&,_pair&)>> _heap {
+        [](_pair& a, _pair& b){return a.first >= b.first;}
+    };
+};
+用法:
+
+1
+2
+MergeIterator mi({Iterator({1,3,5}), Iterator({2,4,6})});
+while(mi.has_next()) cout << mi.get_next() << endl;
