@@ -3,16 +3,7 @@ Flowing Water Feb 9 2015
 矩阵左边和上边是太平洋，右边和下边是大西洋。求出所有的能同时流到两个大洋的点。
 
 For example:
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
+
 Pacific: ~
 Atlantic: *
 ~  ~   ~   ~   ~   ~  ~
@@ -33,61 +24,6 @@ Brutal force的解法很简单，每个点搜索一次，接触到太平洋或�
 优化的话，可以从两个ocean的点开始，从外往里搜。首先搜所有太平洋的点，记录下能接触到的position。然后同理搜大西洋的点，求出交集即可。
 搜索用DFS和BFS都可以，复杂度为O(n^2)。
 
-下面给出5个语言版本的DFS解法。
-Judge@fgdsb测试结果（测试数据大小247KB）：
-
-Language	Runtime
-C++	11ms
-Java	42ms
-Ruby	164ms
-Python	192ms
-C++ 代码:
-
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
 void search(Point pt, unordered_map<Point, bool>& visited, vector<vector<int>>& mat) {
     vector<Point> dirs = {{0,1}, {0,-1}, {1,0}, {-1,0}};
     for(auto dir : dirs) {
