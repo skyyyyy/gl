@@ -1,0 +1,40 @@
+
+
+Design a Special Container Jan 13 2015
+设计一个数据结构，要求支持插入，删除和random返回一个元素这三种操作，每种操作的复杂度都要是O(1)。
+Google, Yelp, Twitter都考过这题。
+我们需要一个vector和一个hash table。vector存实际的数据，hash table存每个value对应在数组里面的index。
+add操作要把新插进去的value的id保存到hash table里。
+remove操作首先根据给的value在hash中查出所在id，然后把数组最后一个元素move到要删除的这个元素所在的位置。然后更新index和size。
+random返回只需要一个简单的rand() % size就好。
+注意这个solution是无法处理重复元素的。
+
+class Container {
+public:
+    void add(int val) {
+        if(_size < _data.size()) {
+            _data[_size++] = val;
+            _index_map[val] = _size - 1;
+        } else {
+            _data.push_back(val);
+            _index_map[val] = _size;
+            ++_size;
+        }
+    }
+    void remove(int val) {
+        if(!_index_map.count(val)) return;
+        int id = _index_map[val];
+        _index_map.erase(val);
+        _index_map[_data[_size - 1]] = id;
+        _data[id] = _data[--_size];
+    }
+    int peek() const {
+        if(_size == 0 || _data.empty()) return -1;
+        return _data[rand() % _size];
+    }
+    bool empty() const {return _size == 0;}
+private:
+    vector<int> _data;
+    unordered_map<int,int> _index_map;
+    int _size{ 0 };
+};
