@@ -45,3 +45,45 @@ int max_surpasser(vector<int> nums) {
 用BST的话也很简单，注意每个节点要存surpasser的数量，O(NlogN)建树，然后O(N)遍历一遍找到最大值即可。
 注意tricky的地方是BST的定义是不允许有重复的，而这题的输入数组是有重复的，要处理一下这个情况。
 
+
+from leetcode: count of smaller number after self.
+class Solution {
+private:
+   struct BSTNode{
+       int val;
+       int count_smaller;
+       int count_equal;
+       BSTNode *left, *right;
+       BSTNode(int v):val(v), count_smaller(0), count_equal(1),left(NULL),right(NULL){}
+       ~BSTNode() {
+           if (left) delete left;
+           if (right) delete right;
+       }
+   }; 
+   void insert(BSTNode* root, int value, int& smaller){
+       if (value > root->val) {
+           smaller += root->count_smaller + root->count_equal;
+           if (!root->right) root->right = new BSTNode(value);
+           else insert(root->right, value, smaller);
+       } else if (value < root->val) {
+           root->count_smaller++;
+           if (!root->left) root->left = new BSTNode(value);
+           else insert(root->left, value, smaller);
+       } else {
+           smaller += root->count_smaller;
+           root->count_equal++;
+       }
+   }
+public:
+    vector<int> countSmaller(vector<int>& nums) {
+        vector<int> res(nums.size(), 0);
+        if (nums.empty()) return res;
+        BSTNode* root = new BSTNode(nums.back());
+        for (int i= nums.size()-2; i>=0; --i) {
+            insert(root, nums[i], res[i]);
+        }
+        delete root;
+        return res;
+    }
+};
+
