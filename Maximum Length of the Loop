@@ -6,24 +6,6 @@ Values are the next index of the jump 0 -> 3 -> 4 -> 0... 1 -> 2 -> 1...
 Write a function to detect if there are loops. If yes, get the max length of the loop possible, otherwise just return zero.
 G家题，实际上就是有向图找最大环。POJ有类似题。用一个DFS走一遍就好，用两个数组，一个记录visited，一个记录走过的长度。
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
 int max_length(const vector<int>& arr) {
     int ret = 0;
     vector<bool> visited(arr.size(), false);
