@@ -41,6 +41,39 @@ reversed. So the SCC {0, 1, 2} becomes sink and the SCC {4} becomes source. As d
 So if we do a DFS of the reversed graph using sequence of vertices in stack, we process vertices from sink to source. 
 That is what we wanted to achieve and that is all needed to print SCCs one by one.
 
+vector<vector<TreeNode*>> findSCC(unordered_map<TreeNode*, vector<TreeNode*>> &graph) {
+   unordered_set<TreeNode*> visited;
+   stack<TreeNode*> s;
+   for(auto it:graph) {
+     dfs(it->first, graph, visited, s);
+   }
+   
+   unordered_map<TreeNode*, vector<TreeNode*>> g2;
+   for(auto it:graph) {
+     TreeNode* node = it->first;
+     for (auto nb:it->second) {
+         g2[nb].push_back(node);
+     }
+   }
+   
+   vector<vector<TreeNode*>> res;
+   
+   visited.clear();
+   while (!s.empty()) {
+       TreeNode* node = s.top();
+       s.pop();
+       vector<TreeNode*> scc;
+       stack<TreeNode*> s2;
+       dfs(node, g2, visited, s2);
+       while (!s2.empty()) {
+          node = s2.top();
+          s2.pop();
+          scc.push_back(node);
+       }
+       if (!scc.empty()) res.push_back(scc);
+   }
+   return scc;
+}
 
 void dfs(TreeNode* node, unordered_map<TreeNode*, vector<TreeNode*>> &graph, unordered_set<TreeNode*> &visited, stack<TreeNode*> &s) {
       if (visited.count(node) > 0) return;
