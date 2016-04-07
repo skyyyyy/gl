@@ -30,7 +30,7 @@ int coins_in_line(const vector<int>& arr) {
             } else if(i+1 == j) {
                 dp[i][j] = max(arr[i], arr[j]);
             } else {
-                dp[i][j] = max(arr[i] + min(dp[i+1][j-1], dp[j+2][j]),
+                dp[i][j] = max(arr[i] + min(dp[i+1][j-1], dp[i+2][j]),
                                arr[j] + min(dp[i][j-2], dp[i+1][j-1]));
             }
         }
